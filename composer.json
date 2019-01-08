@@ -1,0 +1,26 @@
+{
+  "name": "cj/forum",
+  "description": "description_text",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Chris Jackson",
+      "email": "chris@cjack.uk"
+    }
+  ],
+  "require": {
+    "phpunit/phpunit": "7.5.1",
+    "ext-pdo": "*",
+    "ext-openssl": "*",
+    "myclabs/php-enum": "*"
+  },
+  "autoload": {
+    "psr-0": {
+      "user": "public_html/class/",
+      "db": "public_html/class/",
+      "utils": "public_html/class/",
+      "enum": "public_html/class/"
+    }
+  }
+}
