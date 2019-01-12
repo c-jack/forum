@@ -20,6 +20,7 @@ class Login
 
     public function __construct( $email, $password, $connect=null )
     {
+
         if( $connect )
         {
             $this->db = $connect;
@@ -29,12 +30,15 @@ class Login
                 $this->db = new \db\Connect();
             } catch (\Exception $e) {
                 # exception
+
             }
 
         }
         if( $email && $password ) {
-
             $this->prepareLogin( $email, $password );
+        }
+        else {
+            $this->result = [false, "no email/pass"];
         }
     }
 
@@ -42,11 +46,10 @@ class Login
     private function prepareLogin( $email, $password ) : void
     {
 
-        $params = array(Cons::EMAIL=>$email);
+        $this->db->parameters = array(Cons::EMAIL=>$email);
 
         try {
-            if ( $user = $this->checkUserExists($params) ) {
-
+            if ( $user = $this->checkUserExists() ) {
                 if ( !$this->checkBrute( $user[Cons::USER_ID] ) ) {
                     $this->tryLogin( $user, $this->hashPassword( $password, $user ) );
                 }
@@ -57,6 +60,7 @@ class Login
             }
         } catch (\Exception $e) {
             # exception handling
+            $this->result = [false, "exception"];
         }
     }
 
@@ -71,7 +75,6 @@ class Login
                             Cons::USER_TBL_TIME=>$twoHoursAgo );
             $this->db->bind_multiple( $params );
             $numOfRows = $this->db->numRows( Query::LOGIN_ATTEMPTS );
-
             if ($numOfRows > 5)
             {
                 $this->result = [false, "brute attempt"];
@@ -90,12 +93,11 @@ class Login
     }
 
     /**
-     * @param $params
      * @return array
      */
-    private function checkUserExists($params ): array
+    private function checkUserExists(): array
     {
-        if ($user = $this->db->row(Query::GET_USER, $params ) ) {
+        if ($user = $this->db->row(Query::GET_USER ) ) {
 
             list($db_user_id, $db_username, $db_password, $db_salt) = $user;
 
@@ -124,9 +126,10 @@ class Login
         if ($user[Cons::USER_PASS] == $hashedPass) {
             $userAgent = "";
 
-            if( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-                $userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+            if( isset( $_SERVER[Cons::HTTP_USER_AGENT] ) ) {
+                $userAgent = strtolower($_SERVER[Cons::HTTP_USER_AGENT]);
             }
+
 
             $_SESSION[Cons::USER_ID] = $user[Cons::USER_ID];
             $_SESSION[Cons::USERNAME] = $user[Cons::USERNAME];
@@ -136,11 +139,12 @@ class Login
             $this->result = [true, "success"];
 
         } else {
-            $params = array(
-                Cons::USER_TBL_ID => $user[Cons::USER_ID],
-                Cons::USER_TBL_TIME => time() );
 
-            $query = $this->db->query(Query::RECORD_LOGIN_ATTEMPT, $params);
+            $params = array(
+                Cons::USER_TBL_ID => $user[Cons::USER_ID]);
+            $this->db->bind_multiple( $params );
+            $query = $this->db->query(Query::RECORD_LOGIN_ATTEMPT);
+
             if (!$query) {
                 $this->result = [false, "could not record incorrect login attempt"];
             } else {
@@ -167,5 +171,56 @@ class Login
     private function hashLoginString(string $hashed_password, string $user_browser): string
     {
         return hash(Cons::SHA, $hashed_password . $user_browser);
+    }
+
+    public static function logOut():bool {
+        session_destroy();
+        unset($_SESSION[Cons::USER_ID]);
+        unset($_SESSION[Cons::LOGIN_STRING]);
+        unset($_SESSION[Cons::USERNAME]);
+        unset($_SERVER[Cons::HTTP_USER_AGENT]);
+        return isset($_SESSION[Cons::USER_ID]);
+    }
+    public static function validateLogin():bool {
+        $result = false;
+        if (isset($_SESSION[Cons::USER_ID], $_SESSION[Cons::USERNAME], $_SESSION[Cons::LOGIN_STRING])) {
+            $db = null;
+
+
+            try {
+                $db = new \db\Connect();
+            } catch (\Exception $e) {
+                # exception
+                echo "exception";
+            }
+            $user_id = $_SESSION[Cons::USER_ID];
+            $login_string = $_SESSION[Cons::LOGIN_STRING];
+            $username = $_SESSION[Cons::USERNAME];
+            $userAgent = '';
+            if( isset( $_SERVER[Cons::HTTP_USER_AGENT] ) ) {
+                $userAgent = strtolower($_SERVER[Cons::HTTP_USER_AGENT]);
+            }
+
+            $params = array(Cons::USER_TBL_ID => $user_id);
+            $db->bind_multiple($params);
+            $hashedPass = $db->single(Query::LOGIN_CHECK);
+
+            if (!$hashedPass) {
+                //user doesn't exist
+                $result = false;
+            } else {
+                $login_string_check = hash('sha512', $hashedPass . $userAgent);
+
+                if($login_string_check === $login_string)
+                {
+                    $result = true;
+                }
+                else {
+                    $result = false;
+                }
+            }
+
+        }
+        return $result;
     }
 }

@@ -37,7 +37,7 @@ class Connect
     /**
      * @var array
      */
-    private $parameters;
+    public $parameters;
 
     /**
      * connect constructor.
@@ -103,11 +103,10 @@ class Connect
      *	4. Executes Query.
      * @param $query
      */
-    private function _init( $query )
+    private function startQuery($query )
     {
         # Connect to database
         $params = $this->parameters;
-
         if(!$this->getConnectionStatus()) { $this->connectToDb(); }
         try {
             # Prepare query
@@ -121,6 +120,7 @@ class Connect
         catch(\PDOException $e)
         {
             # Exception
+            echo "error " . $e;
         }
         # Reset the parameters array
         $this->parameters = array();
@@ -160,7 +160,7 @@ class Connect
     public function numRows( $query ) : int
     {
         $query = trim( $query );
-        $this->_init( $query );
+        $this->startQuery( $query );
 
         return $this->doQuery->rowCount();
     }
@@ -172,12 +172,15 @@ class Connect
      */
     public function query($query, $fetchMode = PDO::FETCH_ASSOC)
     {
+
         $query = trim( $query );
         try {
-            $this->_init($query);
+            $this->startQuery($query);
         } catch (\Exception $e) {
             # exception
+            echo "exception";
         }
+
         $rawStatement = explode(" ", $query);
 
         # Which SQL statement is used
@@ -208,7 +211,7 @@ class Connect
      */
     public function column( $query )
     {
-        $this->_init( $query );
+        $this->startQuery( $query );
         $Columns = $this->doQuery->fetchAll(PDO::FETCH_NUM);
 
         $column = null;
@@ -225,9 +228,9 @@ class Connect
      * @param int $fetchMode
      * @return mixed
      */
-    public function row($query,$fetchMode = PDO::FETCH_BOTH)
+    public function row($query, $fetchMode = PDO::FETCH_BOTH)
     {
-        $this->_init( $query );
+        $this->startQuery( $query );
         return $this->doQuery->fetch( $fetchMode );
     }
 
@@ -238,7 +241,7 @@ class Connect
     public function single( $query )
     {
         try {
-            $this->_init($query);
+            $this->startQuery($query);
         } catch (\Exception $e) {
             # exception
         }

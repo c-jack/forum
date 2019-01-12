@@ -1,0 +1,83 @@
+/* sass sass/main.scss css/main.css */
+body {
+  font-family: "Arial";
+  background: whitesmoke;
+  margin: 0px;
+}
+
+div#top {
+  background: #333333;
+  padding: 5px;
+  text-align: right;
+  color: white;
+}
+
+/* Login */
+.loginBox {
+  background-color: white;
+  padding: 1em;
+  margin: 1em;
+  border-radius: 5px;
+  width: fit-content;
+  border: 1px solid #e1e1e1;
+}
+.loginBox input {
+  font-size: 16px;
+  padding: 20px 0px;
+  height: 56px;
+  border: none;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  min-width: 280px;
+  box-sizing: border-box;
+  transition: all 0.3s linear;
+  color: #000;
+  font-weight: 400;
+  -webkit-appearance: none;
+}
+.loginBox input:focus {
+  border-bottom: solid 1px #ccc;
+  outline: 0;
+  box-shadow: 0 2px 6px -8px rgba(100, 100, 100, 0.45);
+}
+.loginBox .floating-label {
+  position: relative;
+  margin-bottom: 10px;
+}
+.loginBox .floating-label label {
+  position: absolute;
+  top: calc(50% - 7px);
+  left: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.loginBox .floating-label input:not(:placeholder-shown) {
+  padding: 28px 0px 12px 0px;
+}
+.loginBox .floating-label input:not(:placeholder-shown) + label {
+  transform: translateY(-10px);
+  opacity: 0.7;
+}
+.loginBox input[type=button] {
+  -webkit-appearance: none;
+  width: auto;
+  text-align: center;
+  margin-top: 5px;
+  background-color: #81a756;
+  color: white;
+  font-size: 14px;
+  margin-left: auto;
+  font-weight: 500;
+  box-shadow: 0 2px 6px -1px rgba(100, 100, 100, 0.65);
+  border: none;
+  transition: all 0.3s ease;
+  outline: 0;
+}
+.loginBox input[type=button]:hover {
+  box-shadow: 0 2px 6px -1px rgba(100, 100, 100, 0.65);
+}
+.loginBox input[type=button]:active {
+  transform: scale(0.99);
+}
+
+/*# sourceMappingURL=main.css.map */

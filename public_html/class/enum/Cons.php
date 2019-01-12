@@ -12,6 +12,7 @@ use MyCLabs\Enum\Enum;
 
 class Cons extends Enum
 {
+    const SESSION_NAME = "myForum";
     const SHA = "sha512";
     const USER_PASS = "password";
     const USER_SALT = "salt";
@@ -33,12 +34,14 @@ class Cons extends Enum
     // Session
     const IP_ADDRESS = 'ipAddress';
     const USER_AGENT = 'userAgent';
+    const HTTP_USER_AGENT = 'HTTP_USER_AGENT';
     const OBSOLETE = 'OBSOLETE';
     const EXPIRES = 'EXPIRES';
 
     // User Table
-    const USER_TBL_ID = "userid";
+    const USER_TBL_ID = "userId";
     const USER_TBL_TIME = "time";
+    const USER_TBL_PASS = "passw";
 
 
     // Cleam

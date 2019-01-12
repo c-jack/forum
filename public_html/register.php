@@ -1,5 +1,5 @@
 <?php
-require( "header.php" );
+require("inc/header.php");
 /**
  * Created by PhpStorm.
  * User: chris
@@ -21,8 +21,8 @@ if (isset($_POST['username'],$_POST['firstName'],$_POST['lastName'], $_POST['ema
                      "email"=>$email,
                      "password"=>$password );
     $register = new \user\Register( $values );
-    echo "test";
 }
+else {
 
 ?>
 <h1>Register with us</h1>
@@ -44,7 +44,7 @@ if (!empty($error_msg)) {
     </li>
     <li>Your password and confirmation must match exactly</li>
 </ul>
-<form method="post" name="registration_form" action="<?php echo utils::clean($_SERVER['PHP_SELF'],'url'); ?>">
+<form method="post" name="registration_form">
     Username: <input type='text' name='username' id='username' /><br>
     First name: <input type='text' name='firstName' id='firstName' /><br>
     Last name: <input type='text' name='lastName' id='lastName' /><br>
@@ -69,3 +69,4 @@ if (!empty($error_msg)) {
 
 </body>
 </html>
+<?php }

@@ -1,20 +1,36 @@
 <?php
-require( "header.php" );
-$db = new \db\Connect();
-$query = $db->query( "SELECT value FROM _settings;" ) ;
+
+require_once( __DIR__ . "/../base.php" );
+
+use enum\Cons;
+$smarty->display('head.tpl');
+
+if($loggedIn && (isset($_SESSION[Cons::USER_ID], $_SESSION[Cons::USERNAME]))) {
+    $smarty->assign('username', $_SESSION[Cons::USERNAME]);
+    $smarty->assign('userid', $_SESSION[Cons::USER_ID]);
+}
+echo "<div id='content' class='container'>";
+$smarty->display('header.tpl');
 
 
-    if (in_array('2019-01-02', $query ) ) {
-        echo "Yes, the date is in the array!";
-    } else {
-        echo "No, the date is not in the array!";
+$page = "index";
+if(isset($_GET['p'])) {
+    switch ($_GET['p']) {
+        case "login":
+            //do something login
+            require_once('inc/login.php');
+            break;
+        case "logout":
+            require_once('inc/login.php');
+            break;
+        case "test":
+            $page = $_GET['p'];
+            break;
     }
+}
 
 
-/**
- * Created by PhpStorm.
- * User: chris
- * Date: 29/12/2018
- * Time: 18:20
- */
-require( "header.php" );
+$smarty->display($page.'.tpl');
+
+
+echo "</div>";

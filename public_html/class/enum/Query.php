@@ -17,8 +17,9 @@ class Query extends Enum
      * DB Queries
      */
     const LOGIN_ATTEMPTS = 'SELECT time FROM _login_attempts WHERE user_id = :userId AND time > :time';
-    const RECORD_LOGIN_ATTEMPT = 'INSERT INTO _login_attempts( user_id, time ) VALUES ( :userId, :time )';
+    const RECORD_LOGIN_ATTEMPT = 'INSERT INTO _login_attempts( user_id ) VALUES ( :userId )';
     const GET_USER = 'SELECT userid, usern, passw, salt FROM users WHERE email = :email LIMIT 1';
+    const LOGIN_CHECK = 'SELECT passw FROM users WHERE userid = :userId LIMIT 1';
 
     /**
      * Registration
