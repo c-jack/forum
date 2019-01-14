@@ -88,16 +88,24 @@ class Register
 
 
 
-            $values = array( Cons::USERNAME =>$this->username,
-                             "firstName"=>$this->first_name,
-                             "lastName"=>$this->last_name,
-                             Cons::USER_PASS =>$hashed_password,
-                             Cons::EMAIL =>$this->email,
-                             "salt"=>$random_salt );
+            $values = array( Cons::USERNAME =>[$this->usernam,PDO::PARAM_STR],
+                             Cons::FIRST_NAME=>[$this->first_name,PDO::PARAM_STR],
+                             Cons::LAST_NAME=>[$this->last_name,PDO::PARAM_STR],
+                             Cons::EMAIL =>[$this->email,PDO::PARAM_STR]);
 
             $this->db->bind_multiple( $values );
-
             $insertNewUser = $this->db->query(Query::INSERT_NEW_USER );
+
+            if($insertNewUser){
+                $values = array(
+                    Cons::USER_ID =>[$this->db->lastInsertId(),PDO::PARAM_INT],
+                    Cons::USER_PASS =>[$hashed_password,PDO::PARAM_STR],
+                    Cons::USER_SALT=>[$random_salt,PDO::PARAM_STR]);
+
+                $this->db->bind_multiple( $values );
+                $insertNewUser = $this->db->query(Query::INSERT_NEW_AUTH );
+
+            }
 
 
             if (!$insertNewUser) {

@@ -112,8 +112,10 @@ class Connect
             # Prepare query
             $this->doQuery = $this->pdo->prepare( $query );
 
-            # Bind parameters
-            $this->bindParams( $params );
+            if($params){
+                # Bind parameters
+                $this->bindParams( $params );
+            }
             # Execute SQL
             $this->doQuery->execute();
         }
@@ -274,7 +276,7 @@ class Connect
         if (!empty( $params ) && is_array( $params )) {
             foreach ( $params as $key => &$value ) {
                 $key = ":" . $key;
-                $this->doQuery->bindParam( $key, $value );
+                $this->doQuery->bindParam( $key, $value[0], $value[1] );
             }
         }
     }

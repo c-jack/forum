@@ -9,16 +9,33 @@
 namespace user;
 use enum\Cons;
 use \enum\Query;
+use PDO;
 use \utils\Utils;
 
+/**
+ * Class Login
+ * @package user
+ */
 class Login
 {
 
+    /**
+     * @var array
+     */
     public $result = [];
 
+    /**
+     * @var \db\Connect
+     */
     protected $db;
 
-    public function __construct( $email, $password, $connect=null )
+    /**
+     * Login constructor.
+     * @param $email
+     * @param $password
+     * @param null $connect
+     */
+    public function __construct($email, $password, $connect=null )
     {
 
         if( $connect )
@@ -43,13 +60,14 @@ class Login
     }
 
 
-    private function prepareLogin( $email, $password ) : void
+    /**
+     * @param $email
+     * @param $password
+     */
+    private function prepareLogin($email, $password ) : void
     {
-
-        $this->db->parameters = array(Cons::EMAIL=>$email);
-
         try {
-            if ( $user = $this->checkUserExists() ) {
+            if ( $user = $this->checkUserExists( $email ) ) {
                 if ( !$this->checkBrute( $user[Cons::USER_ID] ) ) {
                     $this->tryLogin( $user, $this->hashPassword( $password, $user ) );
                 }
@@ -64,6 +82,10 @@ class Login
         }
     }
 
+    /**
+     * @param $userId
+     * @return bool|null
+     */
     protected function checkBrute( $userId ) {
 
         // All login attempts are counted from the past 2 hours.
@@ -71,9 +93,10 @@ class Login
 
         try {
 
-            $params = array(Cons::USER_TBL_ID=>$userId,
-                            Cons::USER_TBL_TIME=>$twoHoursAgo );
+            $params = array(Cons::ID=>[$userId,PDO::PARAM_INT],
+                            Cons::TBL_ATTEMPT_TIME=>[$twoHoursAgo,PDO::PARAM_STR] );
             $this->db->bind_multiple( $params );
+
             $numOfRows = $this->db->numRows( Query::LOGIN_ATTEMPTS );
             if ($numOfRows > 5)
             {
@@ -93,24 +116,32 @@ class Login
     }
 
     /**
+     * @param $email
      * @return array
      */
-    private function checkUserExists(): array
+    private function checkUserExists( $email ): array
     {
+        $this->db->parameters = array(Cons::EMAIL=>[$email,PDO::PARAM_STR]);
+
         if ($user = $this->db->row(Query::GET_USER ) ) {
 
-            list($db_user_id, $db_username, $db_password, $db_salt) = $user;
+            list($db_user_id, $db_username) = $user;
 
-            if( $db_user_id && $db_username && $db_password && $db_salt )
-            {
-                $c_user_id = utils::clean($db_user_id, Cons::CLEAN_NUM);
-                $c_username = utils::clean($db_username, Cons::CLEAN_USER);
+            $this->db->parameters = array(Cons::ID=>[$db_user_id,PDO::PARAM_INT]);
 
-                return array(
-                    Cons::USER_ID=>$c_user_id,
-                    Cons::USERNAME=>$c_username,
-                    Cons::USER_PASS=>$db_password,
-                    Cons::USER_SALT=>$db_salt );
+            if ($auth = $this->db->row(Query::GET_AUTH ) ) {
+                list($db_password, $db_salt) = $auth;
+
+                if ($db_user_id && $db_username && $db_password && $db_salt) {
+                    $c_user_id = utils::clean($db_user_id, Cons::CLEAN_NUM);
+                    $c_username = utils::clean($db_username, Cons::CLEAN_USER);
+
+                    return array(
+                        Cons::USER_ID => $c_user_id,
+                        Cons::USERNAME => $c_username,
+                        Cons::USER_PASS => $db_password,
+                        Cons::USER_SALT => $db_salt);
+                }
             }
         }
         $this->result = [false, "failed to execute checkUserExists query"];
@@ -141,7 +172,7 @@ class Login
         } else {
 
             $params = array(
-                Cons::USER_TBL_ID => $user[Cons::USER_ID]);
+                Cons::TBL_USER_ID => [$user[Cons::USER_ID],PDO::PARAM_INT]);
             $this->db->bind_multiple( $params );
             $query = $this->db->query(Query::RECORD_LOGIN_ATTEMPT);
 
@@ -173,6 +204,9 @@ class Login
         return hash(Cons::SHA, $hashed_password . $user_browser);
     }
 
+    /**
+     * @return bool
+     */
     public static function logOut():bool {
         session_destroy();
         unset($_SESSION[Cons::USER_ID]);
@@ -181,6 +215,10 @@ class Login
         unset($_SERVER[Cons::HTTP_USER_AGENT]);
         return isset($_SESSION[Cons::USER_ID]);
     }
+
+    /**
+     * @return bool
+     */
     public static function validateLogin():bool {
         $result = false;
         if (isset($_SESSION[Cons::USER_ID], $_SESSION[Cons::USERNAME], $_SESSION[Cons::LOGIN_STRING])) {
@@ -201,7 +239,7 @@ class Login
                 $userAgent = strtolower($_SERVER[Cons::HTTP_USER_AGENT]);
             }
 
-            $params = array(Cons::USER_TBL_ID => $user_id);
+            $params = array(Cons::TBL_USER_ID =>[$user_id,PDO::PARAM_INT]);
             $db->bind_multiple($params);
             $hashedPass = $db->single(Query::LOGIN_CHECK);
 

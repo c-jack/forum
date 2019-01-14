@@ -23,6 +23,19 @@ if(isset($_GET['p'])) {
         case "logout":
             require_once('inc/login.php');
             break;
+        case "forums":
+            if(!isset($_GET['t'])) {
+                require_once('inc/forums.php');
+                $smarty->assign('forumList', $forums);
+                $page = "components/forumList";
+            }
+            else {
+                $threadId = $_GET['t'];
+                require_once('inc/forum_threads.php');
+                $smarty->assign('threadList', $threads);
+                $page = "components/threadList";
+            }
+            break;
         case "test":
             $page = $_GET['p'];
             break;
@@ -34,3 +47,4 @@ $smarty->display($page.'.tpl');
 
 
 echo "</div>";
+$smarty->display('footer.tpl');

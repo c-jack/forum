@@ -76,6 +76,13 @@ class ComposerStaticInitdc51f0b95b0395d7cdcadbf7da4d0570
                 0 => __DIR__ . '/../..' . '/public_html/class',
             ),
         ),
+        'f' => 
+        array (
+            'forum' => 
+            array (
+                0 => __DIR__ . '/../..' . '/public_html/class',
+            ),
+        ),
         'e' => 
         array (
             'enum' => 

@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'utils' => array($baseDir . '/public_html/class'),
     'user' => array($baseDir . '/public_html/class'),
+    'forum' => array($baseDir . '/public_html/class'),
     'enum' => array($baseDir . '/public_html/class'),
     'db' => array($baseDir . '/public_html/class'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),

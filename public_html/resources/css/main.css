@@ -7,7 +7,8 @@ body {
 
 div#top {
   background: #333333;
-  padding: 5px;
+  padding: 1em;
+  font-size: 0.8em;
   text-align: right;
   color: white;
 }
@@ -78,6 +79,49 @@ div#top {
 }
 .loginBox input[type=button]:active {
   transform: scale(0.99);
+}
+
+.forum_list {
+  box-shadow: 0 2px 6px -1px rgba(100, 100, 100, 0.65);
+  margin: 1em;
+  background: white;
+}
+.forum_list .forum_topic_row, .forum_list .forum_thread_row {
+  padding: 0.75em;
+  border-bottom: 1px solid #e1e1e1;
+}
+.forum_list .forum_topic_row:hover, .forum_list .forum_thread_row:hover {
+  cursor: pointer;
+  background: whitesmoke;
+}
+.forum_list div.name {
+  display: block;
+  font-size: 1.2em;
+  padding: 0.25em;
+}
+.forum_list div.item {
+  padding-left: 1em;
+}
+.forum_list div.item span.title {
+  font-weight: 600;
+}
+.forum_list span.category {
+  display: block;
+  background-color: #333333;
+  color: white;
+  padding: 0.5em;
+  font-size: 1.2em;
+}
+.forum_list div.desc {
+  display: block;
+  font-size: 0.8em;
+  padding: 0.25em;
+}
+.forum_list span.threads, .forum_list span.posts {
+  font-size: 0.8em;
+}
+.forum_list .forum_topics.flex-grow {
+  border-bottom: 1px solid #e1e1e1;
 }
 
 /*# sourceMappingURL=main.css.map */

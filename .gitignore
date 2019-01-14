@@ -1,1 +1,4 @@
 *.idea
+smarty/templates_c
+examples
+public_html/test.php

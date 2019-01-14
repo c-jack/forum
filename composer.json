@@ -20,7 +20,8 @@
       "user": "public_html/class/",
       "db": "public_html/class/",
       "utils": "public_html/class/",
-      "enum": "public_html/class/"
+      "enum": "public_html/class/",
+      "forum": "public_html/class/"
     }
   }
 }
